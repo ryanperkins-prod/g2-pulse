@@ -101,25 +101,25 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-g2-light">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-g2-orange rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-g2-orange rounded-lg flex items-center justify-center shadow-md">
                 <span className="text-white text-xl font-bold">G2</span>
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-g2-dark">G2 Pulse</h1>
-                <p className="text-sm text-gray-500">NPS Analytics Dashboard</p>
+                <p className="text-sm text-gray-600 font-medium">NPS Analytics Dashboard</p>
               </div>
             </div>
-            <div className="flex space-x-4">
+            <div className="flex space-x-3">
               <button
                 onClick={() => setActiveTab('analytics')}
-                className={`px-4 py-2 rounded-lg font-medium transition ${
+                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                   activeTab === 'analytics'
-                    ? 'bg-g2-orange text-white'
-                    : 'text-gray-600 hover:bg-gray-100'
+                    ? 'bg-g2-orange text-white shadow-md'
+                    : 'text-gray-700 hover:bg-gray-100'
                 }`}
                 data-testid="analytics-tab"
               >
@@ -127,10 +127,10 @@ const Dashboard = () => {
               </button>
               <button
                 onClick={() => setActiveTab('settings')}
-                className={`px-4 py-2 rounded-lg font-medium transition ${
+                className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                   activeTab === 'settings'
-                    ? 'bg-g2-orange text-white'
-                    : 'text-gray-600 hover:bg-gray-100'
+                    ? 'bg-g2-orange text-white shadow-md'
+                    : 'text-gray-700 hover:bg-gray-100'
                 }`}
                 data-testid="settings-tab"
               >
@@ -145,16 +145,16 @@ const Dashboard = () => {
         {activeTab === 'analytics' ? (
           <>
             {/* Filters */}
-            <div className="bg-white rounded-lg shadow p-4 mb-6">
+            <div className="bg-white rounded-lg shadow-sm p-4 mb-6 border border-gray-100">
               <div className="flex items-center space-x-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-800 mb-1">
                     Date Range
                   </label>
                   <select
                     value={filters.days}
                     onChange={(e) => setFilters({ ...filters, days: e.target.value })}
-                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-g2-orange"
+                    className="border border-gray-300 rounded-lg px-3 py-2 font-medium text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-g2-orange focus:border-transparent"
                     data-testid="filter-date-range"
                   >
                     <option value="7">Last 7 days</option>
@@ -164,13 +164,13 @@ const Dashboard = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-800 mb-1">
                     Category
                   </label>
                   <select
                     value={filters.category}
                     onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-g2-orange"
+                    className="border border-gray-300 rounded-lg px-3 py-2 font-medium text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-g2-orange focus:border-transparent"
                     data-testid="filter-category"
                   >
                     <option value="All">All</option>
@@ -180,13 +180,13 @@ const Dashboard = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-800 mb-1">
                     Trigger Type
                   </label>
                   <select
                     value={filters.trigger}
                     onChange={(e) => setFilters({ ...filters, trigger: e.target.value })}
-                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-g2-orange"
+                    className="border border-gray-300 rounded-lg px-3 py-2 font-medium text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-g2-orange focus:border-transparent"
                     data-testid="filter-trigger"
                   >
                     <option value="All">All</option>
@@ -228,8 +228,8 @@ const Dashboard = () => {
             </div>
 
             {/* NPS Breakdown */}
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
-              <h2 className="text-lg font-semibold text-g2-dark mb-4">NPS Distribution</h2>
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
+              <h2 className="text-lg font-bold text-g2-dark mb-4">NPS Distribution</h2>
               <div className="space-y-4">
                 <div className="flex items-center" data-testid="nps-breakdown">
                   <div className="w-32 text-sm font-medium text-gray-700">
@@ -277,8 +277,8 @@ const Dashboard = () => {
             </div>
 
             {/* Trend Chart */}
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
-              <h2 className="text-lg font-semibold text-g2-dark mb-4">NPS Trend (Last 30 Days)</h2>
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
+              <h2 className="text-lg font-bold text-g2-dark mb-4">NPS Trend (Last 30 Days)</h2>
               <ResponsiveContainer width="100%" height={300} data-testid="trend-chart">
                 <LineChart data={summary.trendData}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -303,8 +303,8 @@ const Dashboard = () => {
             </div>
 
             {/* Competitive Benchmark */}
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
-              <h2 className="text-lg font-semibold text-g2-dark mb-4">Competitive Benchmark</h2>
+            <div className="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
+              <h2 className="text-lg font-bold text-g2-dark mb-4">Competitive Benchmark</h2>
               <p className="text-sm text-gray-600 mb-6">
                 See how your NPS compares to industry standards
               </p>
@@ -346,8 +346,8 @@ const Dashboard = () => {
             </div>
 
             {/* Response Feed */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-g2-dark mb-4">Recent Responses</h2>
+            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
+              <h2 className="text-lg font-bold text-g2-dark mb-4">Recent Responses</h2>
               <div className="space-y-4" data-testid="response-feed">
                 {responses.map((response) => (
                   <div
@@ -380,8 +380,8 @@ const Dashboard = () => {
           </>
         ) : (
           /* Campaign Settings */
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold text-g2-dark mb-6">Campaign Settings</h2>
+          <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
+            <h2 className="text-lg font-bold text-g2-dark mb-6">Campaign Settings</h2>
             {editedCampaign && (
               <div className="space-y-6">
                 {/* Promoter Settings */}
@@ -462,7 +462,7 @@ const Dashboard = () => {
                 <button
                   onClick={saveCampaign}
                   disabled={saving}
-                  className="w-full bg-g2-orange text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition disabled:opacity-50"
+                  className="w-full bg-g2-orange text-white py-3 rounded-lg font-semibold hover:bg-orange-600 hover:shadow-lg transition-all disabled:opacity-50"
                   data-testid="save-settings-btn"
                 >
                   {saving ? 'Saving...' : 'Save Campaign Settings'}
@@ -478,12 +478,12 @@ const Dashboard = () => {
 
 // Helper Components
 const MetricCard = ({ title, value, description, highlight, testId }) => (
-  <div className={`bg-white rounded-lg shadow p-6 ${highlight ? 'ring-2 ring-g2-orange' : ''}`} data-testid={testId}>
-    <h3 className="text-sm font-medium text-gray-600 mb-2">{title}</h3>
+  <div className={`bg-white rounded-lg shadow-md p-6 transition-shadow hover:shadow-lg border border-gray-100 ${highlight ? 'ring-2 ring-g2-orange' : ''}`} data-testid={testId}>
+    <h3 className="text-sm font-semibold text-gray-700 mb-2">{title}</h3>
     <div className={`text-3xl font-bold ${highlight ? 'text-g2-orange' : 'text-g2-dark'}`}>
       {value}
     </div>
-    <p className="text-sm text-gray-500 mt-1">{description}</p>
+    <p className="text-sm text-gray-600 font-medium mt-1">{description}</p>
   </div>
 );
 
@@ -520,12 +520,12 @@ const BenchmarkMarker = ({ value, label, color }) => {
 
 const InputField = ({ label, value, onChange, testId }) => (
   <div>
-    <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+    <label className="block text-sm font-semibold text-gray-800 mb-1">{label}</label>
     <input
       type="text"
       value={value}
       onChange={onChange}
-      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-g2-orange"
+      className="w-full border border-gray-300 rounded-lg px-4 py-2 font-medium text-gray-800 focus:outline-none focus:ring-2 focus:ring-g2-orange focus:border-transparent"
       data-testid={testId}
     />
   </div>
