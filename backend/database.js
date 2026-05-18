@@ -58,6 +58,8 @@ async function initDatabase() {
       triggeredBy TEXT NOT NULL,
       userId TEXT NOT NULL,
       timestamp TEXT NOT NULL,
+      reviewCompleted INTEGER DEFAULT 0,
+      budgetSpent REAL DEFAULT 0,
       FOREIGN KEY (vendorId) REFERENCES vendors(id),
       FOREIGN KEY (campaignId) REFERENCES campaigns(id)
     );
@@ -181,11 +183,26 @@ function seedDatabase() {
       const trigger = triggers[Math.floor(Math.random() * triggers.length)];
       const userId = `user_${Math.random().toString(36).substr(2, 9)}`;
 
+      // Review completion logic: Promoters more likely to complete (70%), Passives (40%), Detractors (10%)
+      let reviewCompleted = 0;
+      let budgetSpent = 0;
+
+      if (category === 'Promoter' && Math.random() < 0.7) {
+        reviewCompleted = 1;
+        budgetSpent = Math.random() * 30 + 20; // $20-$50
+      } else if (category === 'Passive' && Math.random() < 0.4) {
+        reviewCompleted = 1;
+        budgetSpent = Math.random() * 25 + 15; // $15-$40
+      } else if (category === 'Detractor' && Math.random() < 0.1) {
+        reviewCompleted = 1;
+        budgetSpent = Math.random() * 20 + 10; // $10-$30
+      }
+
       db.run(`
         INSERT INTO nps_responses (
-          vendorId, campaignId, score, category, comment, triggeredBy, userId, timestamp
+          vendorId, campaignId, score, category, comment, triggeredBy, userId, timestamp, reviewCompleted, budgetSpent
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `, [
         'vendor_g2demo',
         'campaign_demo',
@@ -194,7 +211,9 @@ function seedDatabase() {
         comment,
         trigger,
         userId,
-        timestamp.toISOString()
+        timestamp.toISOString(),
+        reviewCompleted,
+        budgetSpent
       ]);
     }
 

@@ -4,6 +4,9 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 const Dashboard = () => {
   const [summary, setSummary] = useState(null);
   const [responses, setResponses] = useState([]);
+  const [reviewGenStats, setReviewGenStats] = useState(null);
+  const [sortField, setSortField] = useState('category');
+  const [sortDirection, setSortDirection] = useState('asc');
   const [filters, setFilters] = useState({
     days: '30',
     category: 'All',
@@ -19,6 +22,7 @@ const Dashboard = () => {
     fetchSummary();
     fetchResponses();
     fetchCampaign();
+    fetchReviewGenStats();
   }, [filters]);
 
   const fetchSummary = async () => {
@@ -60,6 +64,54 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error fetching campaign:', error);
     }
+  };
+
+  const fetchReviewGenStats = async () => {
+    try {
+      const params = new URLSearchParams({
+        vendorId: 'vendor_g2demo',
+        days: filters.days === 'all' ? '' : filters.days,
+        category: filters.category,
+        trigger: filters.trigger
+      });
+      const res = await fetch(`/api/nps/review-gen-stats?${params}`);
+      const data = await res.json();
+      setReviewGenStats(data);
+    } catch (error) {
+      console.error('Error fetching review gen stats:', error);
+    }
+  };
+
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const getSortedData = () => {
+    if (!reviewGenStats) return [];
+
+    const sorted = [...reviewGenStats.byCategory].sort((a, b) => {
+      let aVal = a[sortField];
+      let bVal = b[sortField];
+
+      // Convert strings to numbers for numeric fields
+      if (sortField !== 'category') {
+        aVal = parseFloat(aVal);
+        bVal = parseFloat(bVal);
+      }
+
+      if (sortDirection === 'asc') {
+        return aVal > bVal ? 1 : -1;
+      } else {
+        return aVal < bVal ? 1 : -1;
+      }
+    });
+
+    return sorted;
   };
 
   const saveCampaign = async () => {
@@ -301,6 +353,156 @@ const Dashboard = () => {
                 </LineChart>
               </ResponsiveContainer>
             </div>
+
+            {/* Review Generation Performance */}
+            {reviewGenStats && (
+              <div className="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">
+                <h2 className="text-lg font-bold text-g2-dark mb-4">Review Generation Performance</h2>
+                <p className="text-sm text-gray-600 mb-6">
+                  Track completion rates and budget spend across the NPS funnel
+                </p>
+
+                {/* Summary Cards */}
+                <div className="grid grid-cols-4 gap-4 mb-6">
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="text-xs font-semibold text-gray-600 mb-1">Total Respondents</div>
+                    <div className="text-2xl font-bold text-g2-dark">{reviewGenStats.totalRespondents}</div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="text-xs font-semibold text-gray-600 mb-1">Reviews Completed</div>
+                    <div className="text-2xl font-bold text-green-600">{reviewGenStats.completedReviews}</div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="text-xs font-semibold text-gray-600 mb-1">Completion Rate</div>
+                    <div className="text-2xl font-bold text-g2-orange">{reviewGenStats.completionRate}%</div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="text-xs font-semibold text-gray-600 mb-1">Total Budget Spent</div>
+                    <div className="text-2xl font-bold text-g2-dark">${reviewGenStats.totalBudget}</div>
+                  </div>
+                </div>
+
+                {/* Sortable Table */}
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-gray-200 bg-gray-50">
+                        <th
+                          className="text-left py-3 px-4 text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 transition"
+                          onClick={() => handleSort('category')}
+                        >
+                          <div className="flex items-center space-x-1">
+                            <span>NPS Category</span>
+                            {sortField === 'category' && (
+                              <span className="text-g2-orange">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                            )}
+                          </div>
+                        </th>
+                        <th
+                          className="text-right py-3 px-4 text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 transition"
+                          onClick={() => handleSort('totalRespondents')}
+                        >
+                          <div className="flex items-center justify-end space-x-1">
+                            <span>Total Respondents</span>
+                            {sortField === 'totalRespondents' && (
+                              <span className="text-g2-orange">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                            )}
+                          </div>
+                        </th>
+                        <th
+                          className="text-right py-3 px-4 text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 transition"
+                          onClick={() => handleSort('completedReviews')}
+                        >
+                          <div className="flex items-center justify-end space-x-1">
+                            <span>Completed Reviews</span>
+                            {sortField === 'completedReviews' && (
+                              <span className="text-g2-orange">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                            )}
+                          </div>
+                        </th>
+                        <th
+                          className="text-right py-3 px-4 text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 transition"
+                          onClick={() => handleSort('completionRate')}
+                        >
+                          <div className="flex items-center justify-end space-x-1">
+                            <span>Completion Rate</span>
+                            {sortField === 'completionRate' && (
+                              <span className="text-g2-orange">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                            )}
+                          </div>
+                        </th>
+                        <th
+                          className="text-right py-3 px-4 text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 transition"
+                          onClick={() => handleSort('avgNPS')}
+                        >
+                          <div className="flex items-center justify-end space-x-1">
+                            <span>Avg NPS</span>
+                            {sortField === 'avgNPS' && (
+                              <span className="text-g2-orange">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                            )}
+                          </div>
+                        </th>
+                        <th
+                          className="text-right py-3 px-4 text-xs font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 transition"
+                          onClick={() => handleSort('budgetSpent')}
+                        >
+                          <div className="flex items-center justify-end space-x-1">
+                            <span>Budget Spent</span>
+                            {sortField === 'budgetSpent' && (
+                              <span className="text-g2-orange">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+                            )}
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {getSortedData().map((row) => (
+                        <tr key={row.category} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center space-x-2">
+                              <CategoryBadge category={row.category} />
+                            </div>
+                          </td>
+                          <td className="py-3 px-4 text-right font-medium text-gray-800">
+                            {row.totalRespondents}
+                          </td>
+                          <td className="py-3 px-4 text-right font-medium text-green-600">
+                            {row.completedReviews}
+                          </td>
+                          <td className="py-3 px-4 text-right font-semibold text-g2-orange">
+                            {row.completionRate}%
+                          </td>
+                          <td className="py-3 px-4 text-right font-medium text-gray-800">
+                            {row.avgNPS}
+                          </td>
+                          <td className="py-3 px-4 text-right font-semibold text-g2-dark">
+                            ${row.budgetSpent}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr className="bg-gray-50 font-semibold">
+                        <td className="py-3 px-4 text-gray-800">Total</td>
+                        <td className="py-3 px-4 text-right text-gray-800">{reviewGenStats.totalRespondents}</td>
+                        <td className="py-3 px-4 text-right text-green-600">{reviewGenStats.completedReviews}</td>
+                        <td className="py-3 px-4 text-right text-g2-orange">{reviewGenStats.completionRate}%</td>
+                        <td className="py-3 px-4 text-right text-gray-800">-</td>
+                        <td className="py-3 px-4 text-right text-g2-dark">${reviewGenStats.totalBudget}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+
+                {/* Cost Per Review */}
+                <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold text-blue-900">Average Cost Per Review</span>
+                    <span className="text-xl font-bold text-blue-600">${reviewGenStats.avgCostPerReview}</span>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Competitive Benchmark */}
             <div className="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-100">

@@ -241,6 +241,74 @@ app.put('/api/campaign/:campaignId', (req, res) => {
   }
 });
 
+// GET /api/nps/review-gen-stats - Get review generation statistics
+app.get('/api/nps/review-gen-stats', (req, res) => {
+  try {
+    const { vendorId = 'vendor_g2demo', days, category, trigger } = req.query;
+
+    let query = 'SELECT * FROM nps_responses WHERE vendorId = ?';
+    const params = [vendorId];
+
+    // Apply same filters as other endpoints
+    if (days) {
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - parseInt(days));
+      query += ' AND timestamp >= ?';
+      params.push(cutoffDate.toISOString());
+    }
+
+    if (category && category !== 'All') {
+      query += ' AND category = ?';
+      params.push(category);
+    }
+
+    if (trigger && trigger !== 'All') {
+      query += ' AND triggeredBy = ?';
+      params.push(trigger);
+    }
+
+    const responses = getAll(query, params);
+
+    // Calculate stats
+    const totalRespondents = responses.length;
+    const completedReviews = responses.filter(r => r.reviewCompleted === 1).length;
+    const completionRate = totalRespondents > 0 ? ((completedReviews / totalRespondents) * 100).toFixed(1) : 0;
+    const totalBudget = responses.reduce((sum, r) => sum + (r.budgetSpent || 0), 0);
+
+    // Break down by category
+    const byCategory = ['Promoter', 'Passive', 'Detractor'].map(cat => {
+      const categoryResponses = responses.filter(r => r.category === cat);
+      const categoryCompleted = categoryResponses.filter(r => r.reviewCompleted === 1).length;
+      const categoryBudget = categoryResponses.reduce((sum, r) => sum + (r.budgetSpent || 0), 0);
+
+      return {
+        category: cat,
+        totalRespondents: categoryResponses.length,
+        completedReviews: categoryCompleted,
+        completionRate: categoryResponses.length > 0
+          ? ((categoryCompleted / categoryResponses.length) * 100).toFixed(1)
+          : 0,
+        budgetSpent: categoryBudget.toFixed(2),
+        avgNPS: categoryResponses.length > 0
+          ? (categoryResponses.reduce((sum, r) => sum + r.score, 0) / categoryResponses.length).toFixed(1)
+          : 0
+      };
+    });
+
+    res.json({
+      totalRespondents,
+      completedReviews,
+      completionRate: parseFloat(completionRate),
+      totalBudget: totalBudget.toFixed(2),
+      avgCostPerReview: completedReviews > 0 ? (totalBudget / completedReviews).toFixed(2) : 0,
+      byCategory
+    });
+  } catch (error) {
+    console.error('Error fetching review gen stats:', error);
+    res.status(500).json({ error: 'Failed to fetch review gen stats' });
+  }
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
