@@ -1,0 +1,18 @@
+{
+  "name": "g2-pulse",
+  "version": "1.0.0",
+  "description": "NPS feedback tool with embeddable widget, analytics dashboard, and review generation campaigns",
+  "scripts": {
+    "dev": "concurrently -n \"API,APP\" -c \"blue,green\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "setup": "npm install && npm run install:all && echo '\n✅ Setup complete! Run: npm run dev'"
+  },
+  "keywords": ["nps", "feedback", "analytics"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
