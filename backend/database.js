@@ -189,13 +189,19 @@ function seedDatabase() {
 
       if (category === 'Promoter' && Math.random() < 0.7) {
         reviewCompleted = 1;
-        budgetSpent = Math.random() * 30 + 20; // $20-$50
+        // $25 increments: $25, $50, $75, or $100
+        const increments = [25, 50, 75, 100];
+        budgetSpent = increments[Math.floor(Math.random() * increments.length)];
       } else if (category === 'Passive' && Math.random() < 0.4) {
         reviewCompleted = 1;
-        budgetSpent = Math.random() * 25 + 15; // $15-$40
+        // $25 increments: $25, $50, or $75
+        const increments = [25, 50, 75];
+        budgetSpent = increments[Math.floor(Math.random() * increments.length)];
       } else if (category === 'Detractor' && Math.random() < 0.1) {
         reviewCompleted = 1;
-        budgetSpent = Math.random() * 20 + 10; // $10-$30
+        // $25 increments: $25 or $50
+        const increments = [25, 50];
+        budgetSpent = increments[Math.floor(Math.random() * increments.length)];
       }
 
       db.run(`
