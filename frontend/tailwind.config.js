@@ -7,9 +7,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        'g2-orange': '#FF492C',
-        'g2-dark': '#1A1A1A',
-        'g2-light': '#F8F7F4',
+        // Elevate brand colors (keeping same class names, just updating values)
+        'g2-orange': '#FF492C',  // Elevate rorange-100 (brand)
+        'g2-dark': '#201f23',    // Elevate neutral-100
+        'g2-light': '#fafafa',   // Elevate neutral-5
+      },
+      fontFamily: {
+        'sans': ['Figtree', 'system-ui', 'sans-serif'],
       },
     },
   },
