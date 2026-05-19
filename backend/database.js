@@ -125,7 +125,7 @@ function seedDatabase() {
       new Date().toISOString()
     ]);
 
-    // Generate 90 responses over the last 60 days
+    // Generate 90 responses over the last 50 days (buffer for 30-day filter)
     const triggers = ['action', 'delay', 'manual'];
     const comments = {
       promoter: [
@@ -154,8 +154,8 @@ function seedDatabase() {
     const now = new Date();
 
     for (let i = 0; i < 90; i++) {
-      // Random timestamp within last 60 days
-      const daysAgo = Math.floor(Math.random() * 60);
+      // Random timestamp within last 50 days
+      const daysAgo = Math.floor(Math.random() * 50);
       const timestamp = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
 
       // Realistic distribution: 50% Promoters, 30% Passives, 20% Detractors

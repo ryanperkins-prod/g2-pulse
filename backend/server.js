@@ -58,6 +58,28 @@ app.post('/api/nps/response', (req, res) => {
   }
 });
 
+// POST /api/nps/click-review - Track when promoter clicks G2 review CTA
+app.post('/api/nps/click-review', (req, res) => {
+  try {
+    const { responseId } = req.body;
+
+    if (!responseId) {
+      return res.status(400).json({ error: 'Missing responseId' });
+    }
+
+    runQuery(`
+      UPDATE nps_responses
+      SET reviewCompleted = 1
+      WHERE id = ?
+    `, [responseId]);
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error updating click-review:', error);
+    res.status(500).json({ error: 'Failed to update click-review' });
+  }
+});
+
 // GET /api/nps/responses - Get filtered responses
 app.get('/api/nps/responses', (req, res) => {
   try {
