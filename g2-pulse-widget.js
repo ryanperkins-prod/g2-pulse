@@ -455,9 +455,14 @@
         this.classList.add('selected');
         widgetState.selectedScore = parseInt(this.getAttribute('data-score'));
 
-        // Move to comment step after short delay
+        // For promoters (9-10), skip comment and go straight to incentive CTA
+        // For others, show comment step
         setTimeout(() => {
-          showStep('comment');
+          if (widgetState.selectedScore >= 9) {
+            submitPromoterScore();
+          } else {
+            showStep('comment');
+          }
         }, 300);
       });
     });
@@ -528,7 +533,7 @@
     let html = '';
 
     if (category === 'Promoter') {
-      // Promoter: Primary review CTA
+      // Promoter: Gift card incentive CTA
       html = `
         <div style="text-align: center;">
           <div style="
@@ -542,30 +547,37 @@
             margin: 0 auto 16px;
             color: white;
             font-size: 30px;
-          ">✓</div>
+          ">🎁</div>
           <p style="
             color: ${textColor};
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 20px;
+            font-weight: 700;
             margin: 0 0 8px 0;
-          ">Thank you!</p>
+          ">Get a $25 Gift Card!</p>
           <p style="
             color: ${mutedColor};
             font-size: 14px;
-            margin: 0 0 20px 0;
-          ">We're thrilled you're enjoying ${config.productName}!</p>
+            margin: 0 0 24px 0;
+            line-height: 1.5;
+          ">Share your experience on G2 and we'll send you a $25 Amazon gift card as a thank you.</p>
           <button id="g2pulse-review-cta" style="
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background: #FF492C;
             color: white;
             border: none;
             border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
+            font-weight: 700;
+            font-size: 16px;
             cursor: pointer;
             transition: background 0.2s;
-          " data-testid="review-cta-btn">${promoterCta}</button>
+            box-shadow: 0 4px 6px rgba(255, 73, 44, 0.3);
+          " data-testid="review-cta-btn">Leave a G2 Review →</button>
+          <p style="
+            color: ${mutedColor};
+            font-size: 11px;
+            margin: 12px 0 0 0;
+          ">Takes less than 2 minutes</p>
         </div>
       `;
     } else if (category === 'Passive') {
@@ -756,6 +768,44 @@
     document.getElementById('g2pulse-skip-review').addEventListener('click', function() {
       hideWidget();
     });
+  }
+
+  // Submit promoter score (skip comment step)
+  async function submitPromoterScore() {
+    const userId = getUserId();
+
+    const data = {
+      vendorId: config.vendorId,
+      campaignId: config.campaignId,
+      score: widgetState.selectedScore,
+      comment: '', // No comment for promoters
+      triggeredBy: config.trigger,
+      userId: userId
+    };
+
+    try {
+      const response = await fetch(`${config.apiUrl}/nps/response`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        widgetState.responseId = result.responseId;
+
+        // Show dynamic thank you based on score
+        showThankYou(widgetState.selectedScore, result.responseId);
+      } else {
+        console.error('Failed to submit feedback');
+        alert('Failed to submit feedback. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+      alert('Failed to submit feedback. Please try again.');
+    }
   }
 
   // Submit feedback
