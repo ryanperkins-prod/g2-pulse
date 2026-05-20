@@ -42,8 +42,38 @@
     dismissed: false,
     currentStep: 'score', // 'score', 'comment', 'thankyou'
     selectedScore: null,
-    comment: ''
+    comment: '',
+    responseId: null
   };
+
+  // Campaign settings (fetched from API)
+  let campaignSettings = null;
+
+  // Load campaign settings
+  async function loadCampaignSettings() {
+    try {
+      const response = await fetch(`${config.apiUrl}/campaign/${config.campaignId}`);
+      if (response.ok) {
+        campaignSettings = await response.json();
+      }
+    } catch (error) {
+      console.error('[G2 Pulse] Failed to load campaign settings:', error);
+    }
+  }
+
+  // Track review CTA click
+  async function trackReviewClick(responseId) {
+    try {
+      await fetch(`${config.apiUrl}/nps/click-review`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ responseId })
+      });
+      console.log('[G2 Pulse] Review click tracked');
+    } catch (error) {
+      console.error('[G2 Pulse] Failed to track review click:', error);
+    }
+  }
 
   // Create widget HTML
   function createWidget() {
@@ -183,30 +213,8 @@
           </div>
 
           <!-- Thank You Step -->
-          <div id="g2pulse-step-thankyou" style="display: none; text-align: center;">
-            <div style="
-              width: 60px;
-              height: 60px;
-              background: #10B981;
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              margin: 0 auto 16px;
-              color: white;
-              font-size: 30px;
-            ">✓</div>
-            <p style="
-              color: ${textColor};
-              font-size: 18px;
-              font-weight: 600;
-              margin: 0 0 8px 0;
-            ">Thank you!</p>
-            <p style="
-              color: ${mutedColor};
-              font-size: 14px;
-              margin: 0;
-            " data-testid="thankyou-message">Your feedback helps us improve.</p>
+          <div id="g2pulse-step-thankyou" style="display: none;">
+            <!-- Dynamic content inserted here -->
           </div>
         </div>
       </div>
@@ -315,6 +323,198 @@
     widgetState.currentStep = step;
   }
 
+  // Show thank you with dynamic content based on score
+  function showThankYou(score, responseId) {
+    const isDark = config.theme === 'dark';
+    const bgColor = isDark ? '#1A1A1A' : '#FFFFFF';
+    const textColor = isDark ? '#FFFFFF' : '#1A1A1A';
+    const mutedColor = isDark ? '#A0A0A0' : '#6B7280';
+
+    // Determine category
+    let category;
+    if (score >= 9) category = 'Promoter';
+    else if (score >= 7) category = 'Passive';
+    else category = 'Detractor';
+
+    // Get campaign settings or use defaults
+    const promoterCta = campaignSettings?.promoterCta || 'Leave us a review!';
+    const promoterLink = campaignSettings?.promoterLink || `${config.landingUrl}/${config.campaignId}?score=${score}`;
+    const resourceCta = campaignSettings?.resourceCta || 'Check out our resources';
+    const resourceLink = campaignSettings?.resourceLink || 'https://example.com/resources';
+    const supportCta = campaignSettings?.supportCta || 'Contact Support';
+    const supportLink = campaignSettings?.supportLink || 'https://example.com/support';
+
+    let html = '';
+
+    if (category === 'Promoter') {
+      // Promoter: Primary review CTA
+      html = `
+        <div style="text-align: center;">
+          <div style="
+            width: 60px;
+            height: 60px;
+            background: #10B981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: white;
+            font-size: 30px;
+          ">✓</div>
+          <p style="
+            color: ${textColor};
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+          ">Thank you!</p>
+          <p style="
+            color: ${mutedColor};
+            font-size: 14px;
+            margin: 0 0 20px 0;
+          ">We're thrilled you're enjoying ${config.productName}!</p>
+          <a href="${promoterLink}" id="g2pulse-review-link" style="
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #FF492C;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            text-align: center;
+            transition: background 0.2s;
+          ">${promoterCta}</a>
+        </div>
+      `;
+    } else if (category === 'Passive') {
+      // Passive: Resource primary, review secondary
+      html = `
+        <div style="text-align: center;">
+          <div style="
+            width: 60px;
+            height: 60px;
+            background: #10B981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: white;
+            font-size: 30px;
+          ">✓</div>
+          <p style="
+            color: ${textColor};
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+          ">Thank you!</p>
+          <p style="
+            color: ${mutedColor};
+            font-size: 14px;
+            margin: 0 0 20px 0;
+          ">Your feedback helps us improve.</p>
+          <a href="${resourceLink}" style="
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #FF492C;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            text-align: center;
+            margin-bottom: 12px;
+            transition: background 0.2s;
+          ">${resourceCta}</a>
+          <a href="${promoterLink}" id="g2pulse-review-link" style="
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: transparent;
+            color: #FF492C;
+            border: 2px solid #FF492C;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.2s;
+          ">Share your experience on G2</a>
+        </div>
+      `;
+    } else {
+      // Detractor: Support primary, review link small at bottom
+      html = `
+        <div style="text-align: center;">
+          <div style="
+            width: 60px;
+            height: 60px;
+            background: #10B981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: white;
+            font-size: 30px;
+          ">✓</div>
+          <p style="
+            color: ${textColor};
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+          ">Thank you for your feedback</p>
+          <p style="
+            color: ${mutedColor};
+            font-size: 14px;
+            margin: 0 0 20px 0;
+          ">We're sorry we didn't meet your expectations. Let us help.</p>
+          <a href="${supportLink}" style="
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #FF492C;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            text-align: center;
+            margin-bottom: 16px;
+            transition: background 0.2s;
+          ">${supportCta}</a>
+          <a href="${promoterLink}" id="g2pulse-review-link" style="
+            display: block;
+            color: ${mutedColor};
+            font-size: 12px;
+            text-decoration: underline;
+            transition: opacity 0.2s;
+          ">Or share your experience on G2</a>
+        </div>
+      `;
+    }
+
+    // Insert HTML
+    const thankYouDiv = document.getElementById('g2pulse-step-thankyou');
+    thankYouDiv.innerHTML = html;
+    showStep('thankyou');
+
+    // Add click tracking to review link if present
+    const reviewLink = document.getElementById('g2pulse-review-link');
+    if (reviewLink) {
+      reviewLink.addEventListener('click', function(e) {
+        trackReviewClick(responseId);
+        // Let the link navigate naturally
+      });
+    }
+  }
+
   // Submit feedback
   async function submitFeedback() {
     const comment = document.getElementById('g2pulse-comment').value;
@@ -339,13 +539,11 @@
       });
 
       if (response.ok) {
-        // Show thank you message
-        showStep('thankyou');
+        const result = await response.json();
+        widgetState.responseId = result.responseId;
 
-        // Redirect to landing page after 2 seconds
-        setTimeout(() => {
-          window.location.href = `${config.landingUrl}/${config.campaignId}?score=${widgetState.selectedScore}`;
-        }, 2000);
+        // Show dynamic thank you based on score
+        showThankYou(widgetState.selectedScore, result.responseId);
       } else {
         console.error('Failed to submit feedback');
         alert('Failed to submit feedback. Please try again.');
@@ -359,6 +557,7 @@
   // Initialize widget based on trigger mode
   function initWidget() {
     createWidget();
+    loadCampaignSettings(); // Load campaign settings from API
 
     if (config.trigger === 'delay') {
       // Show after delay

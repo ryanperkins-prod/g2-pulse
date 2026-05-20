@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 const Dashboard = () => {
   const [summary, setSummary] = useState(null);
   const [responses, setResponses] = useState([]);
@@ -31,7 +33,7 @@ const Dashboard = () => {
         vendorId: 'vendor_g2demo',
         days: filters.days === 'all' ? '' : filters.days
       });
-      const res = await fetch(`/api/nps/summary?${params}`);
+      const res = await fetch(`${API_URL}/api/nps/summary?${params}`);
       const data = await res.json();
       setSummary(data);
     } catch (error) {
@@ -47,7 +49,7 @@ const Dashboard = () => {
         category: filters.category,
         trigger: filters.trigger
       });
-      const res = await fetch(`/api/nps/responses?${params}`);
+      const res = await fetch(`${API_URL}/api/nps/responses?${params}`);
       const data = await res.json();
       setResponses(data);
     } catch (error) {
@@ -57,7 +59,7 @@ const Dashboard = () => {
 
   const fetchCampaign = async () => {
     try {
-      const res = await fetch('/api/campaign/campaign_demo');
+      const res = await fetch(`${API_URL}/api/campaign/campaign_demo`);
       const data = await res.json();
       setCampaign(data);
       setEditedCampaign(data);
@@ -74,7 +76,7 @@ const Dashboard = () => {
         category: filters.category,
         trigger: filters.trigger
       });
-      const res = await fetch(`/api/nps/review-gen-stats?${params}`);
+      const res = await fetch(`${API_URL}/api/nps/review-gen-stats?${params}`);
       const data = await res.json();
       setReviewGenStats(data);
     } catch (error) {
@@ -117,7 +119,7 @@ const Dashboard = () => {
   const saveCampaign = async () => {
     setSaving(true);
     try {
-      const res = await fetch('/api/campaign/campaign_demo', {
+      const res = await fetch(`${API_URL}/api/campaign/campaign_demo`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editedCampaign)
