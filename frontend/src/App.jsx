@@ -3,6 +3,7 @@ import { Routes, Route, NavLink } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import Installation from './pages/Installation';
 import Settings from './pages/Settings';
+import Demo from './pages/Demo';
 import CampaignLanding from './pages/CampaignLanding';
 
 function App() {
@@ -38,6 +39,18 @@ function App() {
                   }
                 >
                   Dashboard
+                </NavLink>
+                <NavLink
+                  to="/demo"
+                  className={({ isActive }) =>
+                    `px-4 py-2 rounded-md text-sm font-medium transition ${
+                      isActive
+                        ? 'bg-orange-50 text-orange-600'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    }`
+                  }
+                >
+                  Demo
                 </NavLink>
                 <NavLink
                   to="/installation"
@@ -78,6 +91,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/demo" element={<Demo />} />
         <Route path="/installation" element={<Installation />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/campaign/:campaignId" element={<CampaignLanding />} />

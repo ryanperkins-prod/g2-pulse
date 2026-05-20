@@ -58,7 +58,7 @@ app.post('/api/nps/response', (req, res) => {
   }
 });
 
-// POST /api/nps/click-review - Track when promoter clicks G2 review CTA
+// POST /api/nps/click-review - Track when user clicks G2 review CTA
 app.post('/api/nps/click-review', (req, res) => {
   try {
     const { responseId } = req.body;
@@ -77,6 +77,35 @@ app.post('/api/nps/click-review', (req, res) => {
   } catch (error) {
     console.error('Error updating click-review:', error);
     res.status(500).json({ error: 'Failed to update click-review' });
+  }
+});
+
+// POST /api/nps/submit-review - Submit G2 review form
+app.post('/api/nps/submit-review', (req, res) => {
+  try {
+    const { responseId, rating, title, pros, cons } = req.body;
+
+    if (!responseId || !rating || !title || !pros) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // In production, this would forward to G2's API
+    // For now, just mark as completed and track budget
+    const budgetSpent = 25; // $25 per review
+
+    runQuery(`
+      UPDATE nps_responses
+      SET reviewCompleted = 1,
+          budgetSpent = ?
+      WHERE id = ?
+    `, [budgetSpent, responseId]);
+
+    console.log(`[G2 Pulse] Review submitted: ${rating} stars - "${title}"`);
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error submitting review:', error);
+    res.status(500).json({ error: 'Failed to submit review' });
   }
 });
 

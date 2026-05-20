@@ -172,22 +172,6 @@ function Settings() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                G2 Review URL
-              </label>
-              <input
-                type="url"
-                value={campaign.promoterLink || ''}
-                onChange={(e) => updateField('promoterLink', e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                placeholder="https://www.g2.com/products/your-product/reviews"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Paste your G2 in-app review campaign URL here
-              </p>
-            </div>
-
             {/* Info Callout */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-start space-x-3">
@@ -195,7 +179,7 @@ function Settings() {
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
                 <div className="text-sm text-blue-900">
-                  <strong>How it works:</strong> This URL comes from myG2 → Reviews → In-App Reviews → Update Campaign. G2 will bypass the login gate for your users automatically.
+                  <strong>How it works:</strong> When users click the review CTA, a short-form G2 review form loads directly in the widget - no landing pages, no external links. Reviews are collected seamlessly in-app.
                 </div>
               </div>
             </div>

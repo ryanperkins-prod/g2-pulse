@@ -216,6 +216,172 @@
           <div id="g2pulse-step-thankyou" style="display: none;">
             <!-- Dynamic content inserted here -->
           </div>
+
+          <!-- Review Form Step -->
+          <div id="g2pulse-step-reviewform" style="display: none;">
+            <h3 style="
+              color: ${textColor};
+              font-size: 18px;
+              font-weight: 600;
+              margin: 0 0 16px 0;
+            " data-testid="review-form-title">Share Your Experience on G2</h3>
+
+            <div style="margin-bottom: 16px;">
+              <label style="
+                display: block;
+                font-size: 13px;
+                font-weight: 500;
+                color: ${textColor};
+                margin-bottom: 6px;
+              ">Overall Rating *</label>
+              <div style="display: flex; gap: 8px;" id="g2pulse-star-rating">
+                ${[1,2,3,4,5].map(star => `
+                  <button class="g2pulse-star-btn" data-star="${star}" style="
+                    background: none;
+                    border: none;
+                    font-size: 28px;
+                    cursor: pointer;
+                    color: ${isDark ? '#555' : '#D1D5DB'};
+                    transition: color 0.2s;
+                    padding: 0;
+                  ">★</button>
+                `).join('')}
+              </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+              <label style="
+                display: block;
+                font-size: 13px;
+                font-weight: 500;
+                color: ${textColor};
+                margin-bottom: 6px;
+              ">Review Title *</label>
+              <input
+                id="g2pulse-review-title"
+                type="text"
+                placeholder="Sum up your experience in one line"
+                style="
+                  width: 100%;
+                  padding: 10px;
+                  border: 2px solid ${isDark ? '#444' : '#D1D5DB'};
+                  border-radius: 6px;
+                  background: ${bgColor};
+                  color: ${textColor};
+                  font-size: 14px;
+                  font-family: inherit;
+                  box-sizing: border-box;
+                " />
+            </div>
+
+            <div style="margin-bottom: 16px;">
+              <label style="
+                display: block;
+                font-size: 13px;
+                font-weight: 500;
+                color: ${textColor};
+                margin-bottom: 6px;
+              ">What do you like best? *</label>
+              <textarea
+                id="g2pulse-review-pros"
+                placeholder="What are the main benefits?"
+                rows="3"
+                style="
+                  width: 100%;
+                  padding: 10px;
+                  border: 2px solid ${isDark ? '#444' : '#D1D5DB'};
+                  border-radius: 6px;
+                  background: ${bgColor};
+                  color: ${textColor};
+                  font-size: 14px;
+                  font-family: inherit;
+                  resize: vertical;
+                  box-sizing: border-box;
+                "></textarea>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+              <label style="
+                display: block;
+                font-size: 13px;
+                font-weight: 500;
+                color: ${textColor};
+                margin-bottom: 6px;
+              ">What could be improved?</label>
+              <textarea
+                id="g2pulse-review-cons"
+                placeholder="Optional - any suggestions?"
+                rows="2"
+                style="
+                  width: 100%;
+                  padding: 10px;
+                  border: 2px solid ${isDark ? '#444' : '#D1D5DB'};
+                  border-radius: 6px;
+                  background: ${bgColor};
+                  color: ${textColor};
+                  font-size: 14px;
+                  font-family: inherit;
+                  resize: vertical;
+                  box-sizing: border-box;
+                "></textarea>
+            </div>
+
+            <button id="g2pulse-submit-review" style="
+              width: 100%;
+              padding: 12px;
+              background: #FF492C;
+              color: white;
+              border: none;
+              border-radius: 8px;
+              font-weight: 600;
+              font-size: 14px;
+              cursor: pointer;
+              transition: background 0.2s;
+              margin-bottom: 8px;
+            " data-testid="submit-review-btn">
+              Submit Review
+            </button>
+
+            <button id="g2pulse-skip-review" style="
+              width: 100%;
+              padding: 10px;
+              background: transparent;
+              color: ${mutedColor};
+              border: none;
+              font-size: 13px;
+              cursor: pointer;
+              text-decoration: underline;
+            ">
+              Skip for now
+            </button>
+          </div>
+
+          <!-- Final Thank You Step -->
+          <div id="g2pulse-step-final" style="display: none; text-align: center;">
+            <div style="
+              width: 60px;
+              height: 60px;
+              background: #10B981;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin: 0 auto 16px;
+              color: white;
+              font-size: 30px;
+            ">✓</div>
+            <p style="
+              color: ${textColor};
+              font-size: 18px;
+              font-weight: 600;
+              margin: 0 0 8px 0;
+            " data-testid="final-thank-you">Review submitted!</p>
+            <p style="
+              color: ${mutedColor};
+              font-size: 14px;
+              margin: 0;
+            ">Thank you for helping others discover ${config.productName}.</p>
+          </div>
         </div>
       </div>
 
@@ -247,6 +413,19 @@
         }
 
         #g2pulse-submit:hover {
+          background: #E63E1C !important;
+        }
+
+        .g2pulse-star-btn:hover {
+          color: #FFD700 !important;
+          transform: scale(1.1);
+        }
+
+        .g2pulse-star-btn.selected {
+          color: #FFD700 !important;
+        }
+
+        #g2pulse-submit-review:hover {
           background: #E63E1C !important;
         }
       </style>
@@ -320,6 +499,8 @@
     document.getElementById('g2pulse-step-score').style.display = step === 'score' ? 'block' : 'none';
     document.getElementById('g2pulse-step-comment').style.display = step === 'comment' ? 'block' : 'none';
     document.getElementById('g2pulse-step-thankyou').style.display = step === 'thankyou' ? 'block' : 'none';
+    document.getElementById('g2pulse-step-reviewform').style.display = step === 'reviewform' ? 'block' : 'none';
+    document.getElementById('g2pulse-step-final').style.display = step === 'final' ? 'block' : 'none';
     widgetState.currentStep = step;
   }
 
@@ -373,8 +554,7 @@
             font-size: 14px;
             margin: 0 0 20px 0;
           ">We're thrilled you're enjoying ${config.productName}!</p>
-          <a href="${promoterLink}" id="g2pulse-review-link" style="
-            display: block;
+          <button id="g2pulse-review-cta" style="
             width: 100%;
             padding: 12px;
             background: #FF492C;
@@ -383,10 +563,9 @@
             border-radius: 8px;
             font-weight: 600;
             font-size: 14px;
-            text-decoration: none;
-            text-align: center;
+            cursor: pointer;
             transition: background 0.2s;
-          ">${promoterCta}</a>
+          " data-testid="review-cta-btn">${promoterCta}</button>
         </div>
       `;
     } else if (category === 'Passive') {
@@ -416,7 +595,7 @@
             font-size: 14px;
             margin: 0 0 20px 0;
           ">Your feedback helps us improve.</p>
-          <a href="${resourceLink}" style="
+          <a href="${resourceLink}" target="_blank" style="
             display: block;
             width: 100%;
             padding: 12px;
@@ -431,8 +610,7 @@
             margin-bottom: 12px;
             transition: background 0.2s;
           ">${resourceCta}</a>
-          <a href="${promoterLink}" id="g2pulse-review-link" style="
-            display: block;
+          <button id="g2pulse-review-cta" style="
             width: 100%;
             padding: 10px;
             background: transparent;
@@ -441,10 +619,9 @@
             border-radius: 8px;
             font-weight: 600;
             font-size: 13px;
-            text-decoration: none;
-            text-align: center;
+            cursor: pointer;
             transition: all 0.2s;
-          ">Share your experience on G2</a>
+          " data-testid="review-cta-btn">Share your experience on G2</button>
         </div>
       `;
     } else {
@@ -474,7 +651,7 @@
             font-size: 14px;
             margin: 0 0 20px 0;
           ">We're sorry we didn't meet your expectations. Let us help.</p>
-          <a href="${supportLink}" style="
+          <a href="${supportLink}" target="_blank" style="
             display: block;
             width: 100%;
             padding: 12px;
@@ -489,13 +666,15 @@
             margin-bottom: 16px;
             transition: background 0.2s;
           ">${supportCta}</a>
-          <a href="${promoterLink}" id="g2pulse-review-link" style="
-            display: block;
+          <button id="g2pulse-review-cta" style="
+            background: none;
+            border: none;
             color: ${mutedColor};
             font-size: 12px;
             text-decoration: underline;
-            transition: opacity 0.2s;
-          ">Or share your experience on G2</a>
+            cursor: pointer;
+            padding: 0;
+          " data-testid="review-cta-btn">Or share your experience on G2</button>
         </div>
       `;
     }
@@ -505,14 +684,78 @@
     thankYouDiv.innerHTML = html;
     showStep('thankyou');
 
-    // Add click tracking to review link if present
-    const reviewLink = document.getElementById('g2pulse-review-link');
-    if (reviewLink) {
-      reviewLink.addEventListener('click', function(e) {
+    // Add click handler to review CTA button if present
+    const reviewCta = document.getElementById('g2pulse-review-cta');
+    if (reviewCta) {
+      reviewCta.addEventListener('click', function() {
         trackReviewClick(responseId);
-        // Let the link navigate naturally
+        showReviewForm(responseId);
       });
     }
+  }
+
+  // Show review form
+  function showReviewForm(responseId) {
+    showStep('reviewform');
+
+    // Star rating functionality
+    let selectedRating = 0;
+    document.querySelectorAll('.g2pulse-star-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        selectedRating = parseInt(this.getAttribute('data-star'));
+
+        // Update star display
+        document.querySelectorAll('.g2pulse-star-btn').forEach((star, idx) => {
+          if (idx < selectedRating) {
+            star.classList.add('selected');
+          } else {
+            star.classList.remove('selected');
+          }
+        });
+      });
+    });
+
+    // Submit review button
+    document.getElementById('g2pulse-submit-review').addEventListener('click', async function() {
+      const title = document.getElementById('g2pulse-review-title').value.trim();
+      const pros = document.getElementById('g2pulse-review-pros').value.trim();
+      const cons = document.getElementById('g2pulse-review-cons').value.trim();
+
+      // Basic validation
+      if (!selectedRating || !title || !pros) {
+        alert('Please fill in all required fields');
+        return;
+      }
+
+      // Submit to backend (we'd send this to G2 in production)
+      try {
+        await fetch(`${config.apiUrl}/nps/submit-review`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            responseId: responseId,
+            rating: selectedRating,
+            title: title,
+            pros: pros,
+            cons: cons
+          })
+        });
+
+        // Show final thank you
+        showStep('final');
+        setTimeout(() => {
+          hideWidget();
+        }, 3000);
+      } catch (error) {
+        console.error('[G2 Pulse] Failed to submit review:', error);
+        alert('Failed to submit review. Please try again.');
+      }
+    });
+
+    // Skip button
+    document.getElementById('g2pulse-skip-review').addEventListener('click', function() {
+      hideWidget();
+    });
   }
 
   // Submit feedback
