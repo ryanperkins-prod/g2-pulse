@@ -14,9 +14,16 @@ function App() {
           <div className="flex items-center justify-between h-16">
             {/* Left: Logo */}
             <div className="flex items-center space-x-8">
-              <h1 className="text-xl font-bold" style={{ color: '#FF492C' }}>
-                G2 Pulse
-              </h1>
+              <NavLink to="/" className="flex items-center space-x-2">
+                <div className="w-8 h-8 rounded" style={{ backgroundColor: '#FF492C' }}>
+                  <svg viewBox="0 0 32 32" fill="white" className="w-full h-full p-1">
+                    <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fontSize="20" fontWeight="bold">G2</text>
+                  </svg>
+                </div>
+                <h1 className="text-xl font-bold" style={{ color: '#FF492C' }}>
+                  Pulse
+                </h1>
+              </NavLink>
 
               {/* Center: Navigation Tabs */}
               <div className="flex space-x-1">
