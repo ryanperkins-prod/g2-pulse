@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || 'https://g2-pulse-api.onrender.com';
 
 function Settings() {
   const [activeTab, setActiveTab] = useState('widget');
