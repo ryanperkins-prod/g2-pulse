@@ -1,0 +1,21 @@
+frontend/src/pages/Dashboard.jsx
+  s_35b357c57e2e3b::t_63db51e4311b8d 4
+frontend/src/pages/Settings.jsx
+  s_35b357c57e2e3b::t_942317623f16fc 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "d293ac5965af6b3c2796402586ceab58c719333f",
+  "prompts": {},
+  "sessions": {
+    "s_35b357c57e2e3b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f6965dd7-cf60-4c3b-8d97-073afe8b72d5",
+        "model": "claude-sonnet-4-5-20250929"
+      },
+      "human_author": "Ryan Perkins <rperkins@g2.com>"
+    }
+  }
+}
